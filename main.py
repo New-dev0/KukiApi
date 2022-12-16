@@ -32,32 +32,25 @@ app = FastAPI()
 
 @app.get('/api/apikey={api}/{botname}/{owner}/message={msg}')
 async def chatbot(api, botname, owner, msg):
-    leveldb = MongoClient(MONGO_URL)    
+    leveldb = MongoClient(MONGO_URL)
     toggle = leveldb["myFirstDatabase"]["jsons"]
-    is_token = toggle.find_one({"ID": api})     
+    is_token = toggle.find_one({"ID": api})
     result = f"https://{hosturl}/chatbot/{botname}/{owner}/message={msg}"
     result = requests.get(result)
-    result = result.json() 
+    result = result.json()
     if not is_token:
         url = f"https://{hosturl}/api/apikey={api}/{botname}/{owner}/message={msg}"
         bot = await clientbot()
         await bot.send_message(CHAT_ID, f"Invalid Token\n - {url}")
-        ret = {
-            "reply": "Invalid Token Please Ask @metavoidsupport"        
-        }    
-        return ret
-    if is_token:        
-        ret = {
-            "reply": result["reply"]           
-        }
-        return ret      
+        return {"reply": "Invalid Token Please Ask @metavoidsupport"}
+    return {"reply": result["reply"]}      
 
 
 @app.get('/api/apikey={api}/message={msg}')
 async def simplechatbot(api, msg):
-    leveldb = MongoClient(MONGO_URL)    
+    leveldb = MongoClient(MONGO_URL)
     toggle = leveldb["myFirstDatabase"]["jsons"]
-    is_token = toggle.find_one({"ID": api})     
+    is_token = toggle.find_one({"ID": api})
     result = f"https://{hosturl}/chatbot/kuki/moezilla/message={msg}"
     result = requests.get(result)
     result = result.json()
@@ -65,12 +58,5 @@ async def simplechatbot(api, msg):
         url = f"https://{hosturl}/api/apikey={api}/message={msg}"
         bot = await clientbot()
         await bot.send_message(CHAT_ID, f"Invalid Token\n - {url}")
-        ret = {
-            "reply": "Invalid Token Please Ask @metavoidsupport"        
-        }    
-        return ret
-    if is_token:        
-        ret = {
-            "reply": result["reply"]           
-        }
-        return ret      
+        return {"reply": "Invalid Token Please Ask @metavoidsupport"}
+    return {"reply": result["reply"]}      
